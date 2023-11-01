@@ -1,59 +1,98 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const audioBlobToBase64 = (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const arrayBuffer = reader.result;
+      const base64Audio = btoa(
+        new Uint8Array(arrayBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ''
+        )
+      );
+      resolve(base64Audio);
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(blob);
+  });
+};
+
 const App = () => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState('');
+
+  useEffect(() => {
+    return () => {
+      if (mediaRecorder) {
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [mediaRecorder]);
+
   if (!process.env.REACT_APP_GOOGLE_API_KEY) {
     throw new Error("REACT_APP_GOOGLE_API_KEY not found in the environment");
   }
+
   const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+  console.log("apiKey loaded successfully:", apiKey);
+
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream);
-    recorder.start();
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      recorder.start();
 
-    recorder.addEventListener('dataavailable', async (event) => {
-      const audioBlob = event.data;
-      //const audioUrl = URL.createObjectURL(audioBlob);
-      try {
-        const response = await axios.post(
-          `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
-          {
-            config: {
-              encoding: 'LINEAR16',
-              sampleRateHertz: 16000,
-              languageCode: 'en-US',
-            },
-            audio: {
-              content: audioBlobToBase64(audioBlob),
-            },
+      console.log('Recording started');
+
+      recorder.addEventListener('dataavailable', async (event) => {
+        console.log('Data available event triggered');
+        const audioBlob = event.data;
+        const base64Audio = await audioBlobToBase64(audioBlob);
+        console.log('Base64 audio:', base64Audio);
+
+        try {
+          const response = await axios.post(
+            `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
+            {
+              config: {
+                encoding: 'LINEAR16',
+                sampleRateHertz: 48000,
+                languageCode: 'en-US',
+              },
+              audio: {
+                content: base64Audio,
+              },
+            }
+          );
+          console.log('API response:', response);
+
+          if (response.data.results && response.data.results.length > 0) {
+            setTranscription(response.data.results[0].alternatives[0].transcript);
+          } else {
+            console.log('No transcription results in the API response:', response.data);
+            setTranscription('No transcription available');
           }
-        );
-        setTranscription(response.data.results[0].alternatives[0].transcript);
-      } catch (error) {
-        console.error(error);
-      }
-    });
+        } catch (error) {
+          console.error('Error with Google Speech-to-Text API:', error.response.data);
+        }
+      });
 
-    setRecording(true);
-    setMediaRecorder(recorder);
+      setRecording(true);
+      setMediaRecorder(recorder);
+    } catch (error) {
+      console.error('Error getting user media:', error);
+    }
   };
 
   const stopRecording = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
+      console.log('Recording stopped');
       setRecording(false);
     }
-  };
-
-  const audioBlobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
   };
 
   return (

@@ -22,7 +22,7 @@ To run  React application in your web browser, follow these steps:
 6.  Add your API key to the `.env` file in the following format:
 
    ```
-   GOOGLE_API_KEY=your_api_key   
+   REACT_APP_GOOGLE_API_KEY=your_api_key   
    ```
 
    

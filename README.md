@@ -158,22 +158,6 @@ To run  React application in your web browser, follow these steps:
    
    export default App;
 
-
-
-The provided code snippet is part of a React application that allows users to start and stop voice recording. When the "Start Recording" button is clicked, the code initiates the recording process by calling the "startRecording" function. 
-
-It requests permission from the user to access the audio device using "navigator.mediaDevices.getUserMedia". Inside the function, a MediaRecorder object is created, which captures the audio stream from the microphone. 
-
-The recording starts, and an event listener is added to handle "dataavailable" events. These events are triggered whenever there is new audio data available from the microphone. 
-
-When a "dataavailable" event occurs, the code converts the captured audio data into a "base64" encoded string and sends it to the Google Speech-to-Text API using the "axios" library. The API request includes audio content, language configuration, and an API key.
-
- The response from the API is received, and the transcription results are processed. If the API returns a transcription, it is displayed on the screen using a "p" element. 
-
-The recording stops when the "Stop Recording" button is clicked. In the code, the "setRecording" and "setMediaRecorder" states are used to track the recording state. The transcription state is also stored in the "transcription" state variable. Overall, this code provides a simple interface for voice recording, sends the audio data to the Google Speech-to-Text API, and displays the resulting transcription on the screen
-
-
-
 8. Make sure to replace `YOUR_API_KEY` with your actual Google Cloud Speech-to-Text API key.
 
 9. Save the changes to `src/App.js`.
@@ -187,3 +171,16 @@ The recording stops when the "Stop Recording" button is clicked. In the code, th
 
 Now you should see the application running in your browser, with a button to start and stop recording and a section to display the transcribed text.
 
+## Description of the Code
+
+The provided code snippet is part of a React application that allows users to start and stop voice recording. When the "Start Recording" button is clicked, the code initiates the recording process by calling the "startRecording" function. 
+
+It requests permission from the user to access the audio device using "navigator.mediaDevices.getUserMedia". Inside the function, a MediaRecorder object is created, which captures the audio stream from the microphone. 
+
+The recording starts, and an event listener is added to handle "dataavailable" events. These events are triggered whenever there is new audio data available from the microphone. 
+
+When a "dataavailable" event occurs, the code converts the captured audio data into a "base64" encoded string and sends it to the Google Speech-to-Text API using the "axios" library. The API request includes audio content, language configuration, and an API key.
+
+ The response from the API is received, and the transcription results are processed. If the API returns a transcription, it is displayed on the screen using a "p" element. 
+
+The recording stops when the "Stop Recording" button is clicked. In the code, the "setRecording" and "setMediaRecorder" states are used to track the recording state. The transcription state is also stored in the "transcription" state variable. Overall, this code provides a simple interface for voice recording, sends the audio data to the Google Speech-to-Text API, and displays the resulting transcription on the screen

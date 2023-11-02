@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
+// Function to convert audio blob to base64 encoded string
 const audioBlobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -24,6 +25,7 @@ const App = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState('');
 
+  // Cleanup function to stop recording and release media resources
   useEffect(() => {
     return () => {
       if (mediaRecorder) {
@@ -44,9 +46,9 @@ const App = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       recorder.start();
-
       console.log('Recording started');
 
+      // Event listener to handle data availability
       recorder.addEventListener('dataavailable', async (event) => {
         console.log('Data available event triggered');
         const audioBlob = event.data;
@@ -54,6 +56,8 @@ const App = () => {
         console.log('Base64 audio:', base64Audio);
 
         try {
+          const startTime = performance.now();
+
           const response = await axios.post(
             `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
             {
@@ -67,7 +71,13 @@ const App = () => {
               },
             }
           );
+
+          const endTime = performance.now();
+          const elapsedTime = endTime - startTime;
+
           console.log('API response:', response);
+          console.log('Time taken (ms):', elapsedTime);
+          console.log('Response object properties:', response.data);
 
           if (response.data.results && response.data.results.length > 0) {
             setTranscription(response.data.results[0].alternatives[0].transcript);

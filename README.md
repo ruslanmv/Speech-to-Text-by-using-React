@@ -1,5 +1,9 @@
 # How to run speech to text application in React by using Google Cloud.
 
+![image-20231103222732178](assets/images/posts/README/image-20231103222732178.png)
+
+
+
 To run  React application in your web browser, follow these steps:
 
 1. Make sure you have Node.js installed on your computer. If you don't, download and install it from the [official Node.js website](https://nodejs.org/).
@@ -33,130 +37,131 @@ To run  React application in your web browser, follow these steps:
 
 7. Replace the contents of the `src/App.js` file with the following code:
 
-   
+```javascript
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
-   ```javascript
-   import axios from 'axios';
-   import React, { useState, useEffect } from 'react';
-   
-   // Function to convert audio blob to base64 encoded string
-   const audioBlobToBase64 = (blob) => {
-     return new Promise((resolve, reject) => {
-       const reader = new FileReader();
-       reader.onloadend = () => {
-         const arrayBuffer = reader.result;
-         const base64Audio = btoa(
-           new Uint8Array(arrayBuffer).reduce(
-             (data, byte) => data + String.fromCharCode(byte),
-             ''
-           )
-         );
-         resolve(base64Audio);
-       };
-       reader.onerror = reject;
-       reader.readAsArrayBuffer(blob);
-     });
-   };
-   
-   const App = () => {
-     const [recording, setRecording] = useState(false);
-     const [mediaRecorder, setMediaRecorder] = useState(null);
-     const [transcription, setTranscription] = useState('');
-   
-     // Cleanup function to stop recording and release media resources
-     useEffect(() => {
-       return () => {
-         if (mediaRecorder) {
-           mediaRecorder.stream.getTracks().forEach(track => track.stop());
-         }
-       };
-     }, [mediaRecorder]);
-   
-     if (!process.env.REACT_APP_GOOGLE_API_KEY) {
-       throw new Error("REACT_APP_GOOGLE_API_KEY not found in the environment");
-     }
-   
-     const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
-     console.log("apiKey loaded successfully:", apiKey);
-   
-     const startRecording = async () => {
-       try {
-         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-         const recorder = new MediaRecorder(stream);
-         recorder.start();
-         console.log('Recording started');
-   
-         // Event listener to handle data availability
-         recorder.addEventListener('dataavailable', async (event) => {
-           console.log('Data available event triggered');
-           const audioBlob = event.data;
-           const base64Audio = await audioBlobToBase64(audioBlob);
-           console.log('Base64 audio:', base64Audio);
-   
-           try {
-             const startTime = performance.now();
-   
-             const response = await axios.post(
-               `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
-               {
-                 config: {
-                   encoding: 'LINEAR16',
-                   sampleRateHertz: 48000,
-                   languageCode: 'en-US',
-                 },
-                 audio: {
-                   content: base64Audio,
-                 },
-               }
-             );
-   
-             const endTime = performance.now();
-             const elapsedTime = endTime - startTime;
-   
-             console.log('API response:', response);
-             console.log('Time taken (ms):', elapsedTime);
-             console.log('Response object properties:', response.data);
-   
-             if (response.data.results && response.data.results.length > 0) {
-               setTranscription(response.data.results[0].alternatives[0].transcript);
-             } else {
-               console.log('No transcription results in the API response:', response.data);
-               setTranscription('No transcription available');
-             }
-           } catch (error) {
-             console.error('Error with Google Speech-to-Text API:', error.response.data);
-           }
-         });
-   
-         setRecording(true);
-         setMediaRecorder(recorder);
-       } catch (error) {
-         console.error('Error getting user media:', error);
-       }
-     };
-   
-     const stopRecording = () => {
-       if (mediaRecorder) {
-         mediaRecorder.stop();
-         console.log('Recording stopped');
-         setRecording(false);
-       }
-     };
-   
-     return (
-       <div>
-         <h1>Speech to Text</h1>
-         {!recording ? (
-           <button onClick={startRecording}>Start Recording</button>
-         ) : (
-           <button onClick={stopRecording}>Stop Recording</button>
-         )}
-         <p>Transcription: {transcription}</p>
-       </div>
-     );
-   };
-   
-   export default App;
+// Function to convert audio blob to base64 encoded string
+const audioBlobToBase64 = (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const arrayBuffer = reader.result;
+      const base64Audio = btoa(
+        new Uint8Array(arrayBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ''
+        )
+      );
+      resolve(base64Audio);
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(blob);
+  });
+};
+
+const App = () => {
+  const [recording, setRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [transcription, setTranscription] = useState('');
+
+  // Cleanup function to stop recording and release media resources
+  useEffect(() => {
+    return () => {
+      if (mediaRecorder) {
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [mediaRecorder]);
+
+  if (!process.env.REACT_APP_GOOGLE_API_KEY) {
+    throw new Error("REACT_APP_GOOGLE_API_KEY not found in the environment");
+  }
+
+  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      recorder.start();
+      console.log('Recording started');
+
+      // Event listener to handle data availability
+      recorder.addEventListener('dataavailable', async (event) => {
+        console.log('Data available event triggered');
+        const audioBlob = event.data;
+
+        const base64Audio = await audioBlobToBase64(audioBlob);
+        //console.log('Base64 audio:', base64Audio);
+
+        try {
+          const startTime = performance.now();
+
+          const response = await axios.post(
+            `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
+            {
+              config: {
+                encoding: 'WEBM_OPUS',
+                sampleRateHertz: 48000,
+                languageCode: 'en-US',
+              },
+              audio: {
+                content: base64Audio,
+              },
+            }
+          );
+
+          const endTime = performance.now();
+          const elapsedTime = endTime - startTime;
+
+          //console.log('API response:', response);
+          console.log('Time taken (ms):', elapsedTime);
+
+          if (response.data.results && response.data.results.length > 0) {
+            setTranscription(response.data.results[0].alternatives[0].transcript);
+          } else {
+            console.log('No transcription results in the API response:', response.data);
+            setTranscription('No transcription available');
+          }
+        } catch (error) {
+          console.error('Error with Google Speech-to-Text API:', error.response.data);
+        }
+      });
+
+      setRecording(true);
+      setMediaRecorder(recorder);
+    } catch (error) {
+      console.error('Error getting user media:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      console.log('Recording stopped');
+      setRecording(false);
+    }
+  };
+
+const mode4 =(
+  <div style={{ background: '#E0E0E0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
+    <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speech to Text</h1>
+    {!recording ? (
+      <button onClick={startRecording} style={{ background: '#4CAF50', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
+    ) : (
+      <button onClick={stopRecording} style={{ background: '#F44336', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Stop Recording</button>
+    )}
+    <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Transcription: {transcription}</p>
+  </div>
+);
+
+return (mode4);
+};
+export default App;
+```
+
+
+
 
 8. Make sure to replace `YOUR_API_KEY` with your actual Google Cloud Speech-to-Text API key.
 
@@ -171,6 +176,10 @@ To run  React application in your web browser, follow these steps:
 
 Now you should see the application running in your browser, with a button to start and stop recording and a section to display the transcribed text.
 
+
+
+![image-20231103223543150](assets/images/posts/README/image-20231103223543150.png)
+
 ## Description of the Code
 
 The provided code snippet is part of a React application that allows users to start and stop voice recording. When the "Start Recording" button is clicked, the code initiates the recording process by calling the "startRecording" function. 
@@ -184,3 +193,5 @@ When a "dataavailable" event occurs, the code converts the captured audio data i
  The response from the API is received, and the transcription results are processed. If the API returns a transcription, it is displayed on the screen using a "p" element. 
 
 The recording stops when the "Stop Recording" button is clicked. In the code, the "setRecording" and "setMediaRecorder" states are used to track the recording state. The transcription state is also stored in the "transcription" state variable. Overall, this code provides a simple interface for voice recording, sends the audio data to the Google Speech-to-Text API, and displays the resulting transcription on the screen
+
+You can personalize your own colors, I have added some colors examples [here](./templates.md)

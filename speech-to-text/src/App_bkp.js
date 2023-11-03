@@ -1,6 +1,16 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-
+const audiobase64Audio = async (audioBlob) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(audioBlob);
+  const base64Audio = await new Promise((resolve, reject) => {
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.onerror = reject;
+  });
+  return base64Audio;
+};
 // Function to convert audio blob to base64 encoded string
 const audioBlobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -39,6 +49,8 @@ const App = () => {
   }
 
   const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+  console.log("apiKey loaded successfully:", apiKey);
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -51,8 +63,13 @@ const App = () => {
         console.log('Data available event triggered');
         const audioBlob = event.data;
 
+        
+        const base64AudioString = await audiobase64Audio(audioBlob);
+        console.log('Base64 audio:', base64AudioString);
+
+
         const base64Audio = await audioBlobToBase64(audioBlob);
-        //console.log('Base64 audio:', base64Audio);
+        console.log('Base64 audio:', base64Audio);
 
         try {
           const startTime = performance.now();
@@ -74,8 +91,9 @@ const App = () => {
           const endTime = performance.now();
           const elapsedTime = endTime - startTime;
 
-          //console.log('API response:', response);
+          console.log('API response:', response);
           console.log('Time taken (ms):', elapsedTime);
+          console.log('Response object properties:', response.data);
 
           if (response.data.results && response.data.results.length > 0) {
             setTranscription(response.data.results[0].alternatives[0].transcript);
@@ -103,18 +121,17 @@ const App = () => {
     }
   };
 
-const mode4 =(
-  <div style={{ background: '#E0E0E0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
-    <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speech to Text</h1>
-    {!recording ? (
-      <button onClick={startRecording} style={{ background: '#4CAF50', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
-    ) : (
-      <button onClick={stopRecording} style={{ background: '#F44336', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Stop Recording</button>
-    )}
-    <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Transcription: {transcription}</p>
-  </div>
-);
-
-return (mode4);
+  return (
+    <div>
+      <h1>Speech to Text</h1>
+      {!recording ? (
+        <button onClick={startRecording}>Start Recording</button>
+      ) : (
+        <button onClick={stopRecording}>Stop Recording</button>
+      )}
+      <p>Transcription: {transcription}</p>
+    </div>
+  );
 };
+
 export default App;

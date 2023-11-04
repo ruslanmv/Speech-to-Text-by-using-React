@@ -140,10 +140,13 @@ const App = () => {
             setTranscription(transcription);
             const startTimeGPT = performance.now();
 
-            sendMessageToChatGPT(transcription).then((message) => {
-              console.log(message);
-              setMessageAI(message);
-            });
+            //sendMessageToChatGPT(transcription).then((message) => {
+            //  console.log(message);
+            //  setMessageAI(message);
+            //});
+            const output = await sendMessageToChatGPT(transcription);
+            console.log(output);
+            setMessageAI(output);
             
             const endTimeGPT = performance.now();
             const elapsedTimeGPT = endTimeGPT - startTimeGPT;

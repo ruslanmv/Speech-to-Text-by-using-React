@@ -195,3 +195,13 @@ When a "dataavailable" event occurs, the code converts the captured audio data i
 The recording stops when the "Stop Recording" button is clicked. In the code, the "setRecording" and "setMediaRecorder" states are used to track the recording state. The transcription state is also stored in the "transcription" state variable. Overall, this code provides a simple interface for voice recording, sends the audio data to the Google Speech-to-Text API, and displays the resulting transcription on the screen
 
 You can personalize your own colors, I have added some colors examples [here](./templates.md)
+
+
+
+The ChatGPT version 
+
+![image-20231104200627056](assets/images/posts/README/image-20231104200627056.png)
+
+![image-20231104200824707](assets/images/posts/README/image-20231104200824707.png)
+
+![image-20231104201113355](assets/images/posts/README/image-20231104201113355.png)

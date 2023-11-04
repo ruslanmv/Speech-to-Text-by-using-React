@@ -1,6 +1,47 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
+////////////
+async function synthesizeSpeech(text) {
+  if (!process.env.REACT_APP_GOOGLE_API_KEY) {
+    throw new Error("GOOGLE_API_KEY not found in the environment");
+  }
+  if (typeof text !== "string") {
+    throw new Error(`Invalid input type: ${typeof text}. Type has to be text or SSML.`);
+  }
+  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+  const apiURL = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
+  const requestBody = {
+    input: {
+      text,
+    },
+    voice: { languageCode: 'en-US', name: 'en-US-Neural2-H', ssmlGender: 'FEMALE' },
+    //voice: { languageCode: 'it-IT', name: 'it-IT-Standard-B', ssmlGender: 'FEMALE' },
+    audioConfig: {
+      audioEncoding: "MP3",
+    },
+  };
+  const response = await fetch(apiURL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Google Cloud TTS API Error: ${errorData.error.message}`);
+  }
+  const responseData = await response.json();
+  const audioContent = responseData.audioContent;
+
+  return audioContent;
+}
+
+
+
+
 // Function to convert audio blob to base64 encoded string
 const audioBlobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -49,16 +90,17 @@ async function sendMessageToChatGPT(inputText) {
 //Simple version gpt-3.5-turbo
 async function sendMessageToChatGPT(inputText) {
   console.log(`ChatGPT message received: ${inputText}`);
+  const MAX_WORD_SUGGESTION = 60;
   try {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       JSON.stringify({
         model: 'gpt-3.5-turbo',
         messages: [
-          { role: "system", content: "You are a friendly and humorous assistant, providing users with a fun and engaging conversation." },
+          { role: "system", content: `You are a friendly and humorous assistant, providing users with a fun and engaging conversation. Keep your responses concise, no longer than ${MAX_WORD_SUGGESTION} words per response.` },
           { role: "user", content: inputText },
         ],
-        max_tokens: 25,
+        max_tokens: 70,
         temperature: 0
       }),
       {
@@ -83,6 +125,7 @@ const App = () => {
   const [transcription, setTranscription] = useState('');
   const [messageAI, setMessageAI] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Added isLoading state
+  const [audioContent, setAudioContent] = useState(null); // Added useState for audioContent
   // Cleanup function to stop recording and release media resources
   useEffect(() => {
     return () => {
@@ -154,6 +197,13 @@ const App = () => {
             const elapsedTimeGPT = endTimeGPT - startTimeGPT;
             console.log('AI processing -  Time taken (ms):', elapsedTimeGPT);
             setIsLoading(false); // Set isLoading back to false after processing
+            const synthesizedAudio = await synthesizeSpeech(output);
+            setAudioContent(synthesizedAudio);
+            const audio = new Audio(`data:audio/mp3;base64,${synthesizedAudio}`);
+            audio.play();
+
+
+
           } else {
             console.log('No transcription results in the API response:', response.data);
             setTranscription('No transcription available');

@@ -82,7 +82,6 @@ const App = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState('');
   const [messageAI, setMessageAI] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Added isLoading state
   // Cleanup function to stop recording and release media resources
   useEffect(() => {
     return () => {
@@ -139,7 +138,6 @@ const App = () => {
             
             const transcription = response.data.results[0].alternatives[0].transcript;
             setTranscription(transcription);
-            setIsLoading(true); // Set isLoading to true during processing
             const startTimeGPT = performance.now();
 
             //sendMessageToChatGPT(transcription).then((message) => {
@@ -153,7 +151,7 @@ const App = () => {
             const endTimeGPT = performance.now();
             const elapsedTimeGPT = endTimeGPT - startTimeGPT;
             console.log('AI processing -  Time taken (ms):', elapsedTimeGPT);
-            setIsLoading(false); // Set isLoading back to false after processing
+
           } else {
             console.log('No transcription results in the API response:', response.data);
             setTranscription('No transcription available');
@@ -194,7 +192,7 @@ const mode5 =(
 
 );
 
-
+*/
 //OpenAI Theme
 const mode6 =(
 <div style={{ background: '#F1F3F5', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
@@ -208,27 +206,6 @@ const mode6 =(
   <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>AI: {messageAI}</p>
 </div>
 );
-*/
- //OpenAI Theme
- const mode7 = (
-  <div style={{ background: '#F1F3F5', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
-    <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speak with ChatGPT</h1>
-    {!recording ? (
-      <button onClick={startRecording} style={{ background: '#4A90E2', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
-    ) : (
-      <button onClick={stopRecording} style={{ background: '#F87676', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Stop Recording</button>
-    )}
-    <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>User: {transcription}</p>
-    {isLoading ? (
-      <div style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: '#4CAF50', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
-         <span style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', textShadow: '1px 1px 2px rgba(0,0,0,0.4)' }}>Processing...</span> {/* Added styling to the processing icon */}
-      </div>
-    ) : (
-      <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>AI: {messageAI}</p>
-    )}
-  </div>
-);
-
-return (mode7);
+return (mode6);
 };
 export default App;

@@ -189,7 +189,7 @@ const mode5 =(
 //OpenAI Theme
 const mode6 =(
 <div style={{ background: '#F1F3F5', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
-  <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speech with ChatGPT</h1>
+  <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speak with ChatGPT</h1>
   {!recording ? (
     <button onClick={startRecording} style={{ background: '#4A90E2', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
   ) : (

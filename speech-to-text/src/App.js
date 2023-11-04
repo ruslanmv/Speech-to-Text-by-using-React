@@ -19,7 +19,8 @@ const audioBlobToBase64 = (blob) => {
     reader.readAsArrayBuffer(blob);
   });
 };
-
+/*
+//Simple version gpt-3.5-turbo-instruct
 async function sendMessageToChatGPT(inputText) {
   console.log(`ChatGPT message received: ${inputText}`);
   try {
@@ -43,6 +44,39 @@ async function sendMessageToChatGPT(inputText) {
     throw new Error('Failed to send message to ChatGPT');
   }
 }
+*/
+
+//Simple version gpt-3.5-turbo
+async function sendMessageToChatGPT(inputText) {
+  console.log(`ChatGPT message received: ${inputText}`);
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: "system", content: "You are a friendly and humorous assistant, providing users with a fun and engaging conversation." },
+          { role: "user", content: inputText },
+        ],
+        max_tokens: 20,
+        temperature: 0
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+        },
+      }
+    );
+    console.log(`ChatGPT response :`, response);
+    const message = response.data.choices[0].message.content.trim();
+    return message;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to send message to ChatGPT');
+  }
+}
+
 const App = () => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);

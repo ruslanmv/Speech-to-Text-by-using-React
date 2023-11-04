@@ -20,11 +20,34 @@ const audioBlobToBase64 = (blob) => {
   });
 };
 
+async function sendMessageToChatGPT(inputText) {
+  console.log(`ChatGPT message received: ${inputText}`);
+  try {
+    const response = await axios.post('https://api.openai.com/v1/completions', {
+      model: 'gpt-3.5-turbo-instruct',
+      prompt: inputText,
+      max_tokens: 20,
+      temperature: 0
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+      }
+    });
+    console.log(`ChatGPT response :`,response);
+    //console.log(response.data.choices[0].text.trim());
+    const message = response.data.choices[0].text.trim();
+    return message;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to send message to ChatGPT');
+  }
+}
 const App = () => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState('');
-
+  const [messageAI, setMessageAI] = useState('');
   // Cleanup function to stop recording and release media resources
   useEffect(() => {
     return () => {
@@ -78,7 +101,16 @@ const App = () => {
           console.log('Time taken (ms):', elapsedTime);
 
           if (response.data.results && response.data.results.length > 0) {
-            setTranscription(response.data.results[0].alternatives[0].transcript);
+            //setTranscription(response.data.results[0].alternatives[0].transcript);
+            const transcription = response.data.results[0].alternatives[0].transcript;
+            setTranscription(transcription);
+            sendMessageToChatGPT(transcription).then((message) => {
+              console.log(message);
+              setMessageAI(message);
+            });
+            
+            
+
           } else {
             console.log('No transcription results in the API response:', response.data);
             setTranscription('No transcription available');
@@ -103,18 +135,36 @@ const App = () => {
     }
   };
 
-const mode4 =(
-  <div style={{ background: '#E0E0E0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
-    <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speech to Text</h1>
-    {!recording ? (
-      <button onClick={startRecording} style={{ background: '#4CAF50', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
-    ) : (
-      <button onClick={stopRecording} style={{ background: '#F44336', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Stop Recording</button>
-    )}
-    <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Transcription: {transcription}</p>
-  </div>
+/*
+//Google Theme
+const mode5 =(
+<div style={{ background: '#E0E0E0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
+  <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speech to Text</h1>
+  {!recording ? (
+    <button onClick={startRecording} style={{ background: '#4CAF50', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
+  ) : (
+    <button onClick={stopRecording} style={{ background: '#F44336', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Stop Recording</button>
+  )}
+  <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>Transcription: {transcription}</p>
+  <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>AI: {messageAI}</p>
+</div>
+
 );
 
-return (mode4);
+*/
+//OpenAI Theme
+const mode6 =(
+<div style={{ background: '#F1F3F5', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'Roboto, sans-serif' }}>
+  <h1 style={{ fontSize: '48px', color: '#3F51B5', marginBottom: '40px' }}>Speech with ChatGPT</h1>
+  {!recording ? (
+    <button onClick={startRecording} style={{ background: '#4A90E2', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Start Recording</button>
+  ) : (
+    <button onClick={stopRecording} style={{ background: '#F87676', color: 'white', fontSize: '24px', padding: '10px 20px', borderRadius: '5px', border: 'none', cursor: 'pointer', marginBottom: '20px', boxShadow: '0 3px 5px rgba(0,0,0,0.3)' }}>Stop Recording</button>
+  )}
+  <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>User: {transcription}</p>
+  <p style={{ fontSize: '24px', color: '#212121', maxWidth: '80%', lineHeight: '1.5', textAlign: 'left', background: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>AI: {messageAI}</p>
+</div>
+);
+return (mode6);
 };
 export default App;

@@ -58,7 +58,7 @@ async function sendMessageToChatGPT(inputText) {
           { role: "system", content: "You are a friendly and humorous assistant, providing users with a fun and engaging conversation." },
           { role: "user", content: inputText },
         ],
-        max_tokens: 20,
+        max_tokens: 25,
         temperature: 0
       }),
       {
@@ -68,7 +68,7 @@ async function sendMessageToChatGPT(inputText) {
         },
       }
     );
-    console.log(`ChatGPT response :`, response);
+    //console.log(`ChatGPT response :`, response);
     const message = response.data.choices[0].message.content.trim();
     return message;
   } catch (error) {
@@ -132,18 +132,22 @@ const App = () => {
           const elapsedTime = endTime - startTime;
 
           //console.log('API response:', response);
-          console.log('Time taken (ms):', elapsedTime);
+          console.log('Voice Recognition - Time taken (ms):', elapsedTime);
 
           if (response.data.results && response.data.results.length > 0) {
-            //setTranscription(response.data.results[0].alternatives[0].transcript);
+            
             const transcription = response.data.results[0].alternatives[0].transcript;
             setTranscription(transcription);
+            const startTimeGPT = performance.now();
+
             sendMessageToChatGPT(transcription).then((message) => {
               console.log(message);
               setMessageAI(message);
             });
             
-            
+            const endTimeGPT = performance.now();
+            const elapsedTimeGPT = endTimeGPT - startTimeGPT;
+            console.log('AI processing -  Time taken (ms):', elapsedTimeGPT);
 
           } else {
             console.log('No transcription results in the API response:', response.data);

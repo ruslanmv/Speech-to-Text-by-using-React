@@ -107,7 +107,7 @@ async function sendMessageToChatGPT(inputText) {
           { role: "system", content: `You are a friendly and humorous assistant, providing users with a fun and engaging conversation. Keep your responses concise, no longer than ${MAX_WORD_SUGGESTION} words per response.` },
           { role: "user", content: inputText },
         ],
-        max_tokens: 70,
+        //max_tokens: 70,
         temperature: 0
       }),
       {
@@ -172,6 +172,7 @@ const App = () => {
                 encoding: 'WEBM_OPUS',
                 sampleRateHertz: 48000,
                 languageCode: 'en-US',
+                //languageCode: 'it-IT',
               },
               audio: {
                 content: base64Audio,

@@ -1,3 +1,9 @@
+/*
+  Code by Ruslan Magana Vsevolodovna
+  This code is provided as-is and I am not responsible for its usage.
+  For any inquiries, please contact me at contact@ruslanmv.com.
+*/
+
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import './MatrixTheme.css';

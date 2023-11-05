@@ -64,6 +64,11 @@ npm install axios
 1. Replace the contents of the `src/App.js` file with the following code:
 
 ```
+/*
+  Code by Ruslan Magana Vsevolodovna
+  This code is provided as-is and I am not responsible for its usage.
+  For any inquiries, please contact me at contact@ruslanmv.com.
+*/
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 async function synthesizeSpeech(text) {
@@ -329,8 +334,6 @@ npm start
 
 11. The application should automatically open in your default web browser. If it doesn't, open your browser and navigate to `http://localhost:3000`.
 
-
-
 This will launch the application in your default web browser at `http://localhost:3000`. You should see the interface for speaking with ChatGPT.
 
 ## Step 7: Interact with ChatGPT:
@@ -428,8 +431,6 @@ If you want to add the Matrix animation.
 javascript import './MatrixTheme.css'; 
 ```
 
-
-
 Make sure the path to the CSS file is correct. If you created the CSS file in a different folder, adjust the path accordingly. 4. Now, you can use the CSS classes defined in `MatrixTheme.css` in your React component you use thefollowing  code
 
 ```
@@ -464,8 +465,6 @@ return (matrix_animated);
 and wuala you got this:
 
 ![matrixchat](assets/images/posts/README/matrixchat.gif)
-
-
 
 Conclusion:
 

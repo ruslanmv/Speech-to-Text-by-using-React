@@ -321,8 +321,6 @@ This will launch the application in your default web browser at `http://localhos
 
 For people who is interested in the coding,  I have created this program by keeping i mind the following diagram flow.
 
-
-
 ![DIAGRAMA-16991297873902](assets/images/posts/README/DIAGRAMA-16991297873902.png)
 
 ## Description
@@ -441,61 +439,3 @@ Conclusion:
 In this blog post, we explored the process of speaking with ChatGPT using a React application. By leveraging the Google Text-to-Speech and Speech-to-Text APIs, we were able to create a voice-enabled interface that transcribes user speech, sends it to ChatGPT for response generation, and converts the AI's response into audio for playback. This showcases the exciting possibilities of conversational AI and its potential for creating engaging user experiences. Remember to handle the security and privacy aspects of using API keys and ensure proper error handling in your code. 
 
 **Congratulation!** You have build your own **ChatGPT** in **JavaScript** with **Google Cloud Platform**
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-1. 
-
-
-
-![image-20231103223543150](assets/images/posts/README/image-20231103223543150.png)
-
-## Description of the Code
-
-The provided code snippet is part of a React application that allows users to start and stop voice recording. When the "Start Recording" button is clicked, the code initiates the recording process by calling the "startRecording" function. 
-
-It requests permission from the user to access the audio device using "navigator.mediaDevices.getUserMedia". Inside the function, a MediaRecorder object is created, which captures the audio stream from the microphone. 
-
-The recording starts, and an event listener is added to handle "dataavailable" events. These events are triggered whenever there is new audio data available from the microphone. 
-
-When a "dataavailable" event occurs, the code converts the captured audio data into a "base64" encoded string and sends it to the Google Speech-to-Text API using the "axios" library. The API request includes audio content, language configuration, and an API key.
-
- The response from the API is received, and the transcription results are processed. If the API returns a transcription, it is displayed on the screen using a "p" element. 
-
-The recording stops when the "Stop Recording" button is clicked. In the code, the "setRecording" and "setMediaRecorder" states are used to track the recording state. The transcription state is also stored in the "transcription" state variable. Overall, this code provides a simple interface for voice recording, sends the audio data to the Google Speech-to-Text API, and displays the resulting transcription on the screen
-
-You can personalize your own colors, I have added some colors examples [here](./templates.md)
-
-
-
-The ChatGPT version 
-
-![image-20231104200627056](assets/images/posts/README/image-20231104200627056.png)
-
-![image-20231104200824707](assets/images/posts/README/image-20231104200824707.png)
-
-![image-20231104201113355](assets/images/posts/README/image-20231104201113355.png)
-
-![image-20231104201406172](assets/images/posts/README/image-20231104201406172.png)

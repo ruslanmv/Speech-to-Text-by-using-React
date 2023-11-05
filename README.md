@@ -1,5 +1,3 @@
-
-
 # How to Speak with ChatGPT in React by using Google Cloud.
 
 Hello everyone, today we are going to build an interesting application that allow us speak with **ChatGPT** by recording your **voice** in and reproduce the **audio answer** your web browser.
@@ -37,7 +35,7 @@ To use the Google Text-to-Speech and Google Speech-to-Text APIs, you need API ke
 
 2. Enable the Text-to-Speech and Speech-to-Text APIs for your project.
 
-   For choose your speech voice you can see [here](https://cloud.google.com/text-to-speech/docs/voices)
+For choose your speech voice you can see [here](https://cloud.google.com/text-to-speech/docs/voices)
 
 3. Obtain the API keys for these services.
 
@@ -45,6 +43,7 @@ To use the Google Text-to-Speech and Google Speech-to-Text APIs, you need API ke
 
 1. In the project root directory, create a new file called `.env`.
 2. Open the `.env` file in a text editor and add the following lines:
+
 ```
 REACT_APP_GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY
 REACT_APP_OPENAI_API_KEY=YOUR_OPENAI_API_KEY
@@ -127,32 +126,7 @@ const audioBlobToBase64 = (blob) => {
     reader.readAsArrayBuffer(blob);
   });
 };
-/*
-//Simple version gpt-3.5-turbo-instruct
-async function sendMessageToChatGPT(inputText) {
-  console.log(`ChatGPT message received: ${inputText}`);
-  try {
-    const response = await axios.post('https://api.openai.com/v1/completions', {
-      model: 'gpt-3.5-turbo-instruct',
-      prompt: inputText,
-      max_tokens: 20,
-      temperature: 0
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
-      }
-    });
-    console.log(`ChatGPT response :`,response);
-    //console.log(response.data.choices[0].text.trim());
-    const message = response.data.choices[0].text.trim();
-    return message;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Failed to send message to ChatGPT');
-  }
-}
-*/
+
 
 //Simple version gpt-3.5-turbo
 async function sendMessageToChatGPT(inputText) {
@@ -320,19 +294,17 @@ export default App;
 ```
 
 
-8. Save the changes to `src/App.js`.
+2. Save the changes to `src/App.js`.
 
-    
+## Step 6:  Run the Application
 
-   ## Step 6:  Run the Application
-
-   In the terminal, run the following command to start the React development server:
+In the terminal, run the following command to start the React development server:
 
    ```
 npm start
    ```
 
-11. The application should automatically open in your default web browser. If it doesn't, open your browser and navigate to `http://localhost:3000`.
+3. The application should automatically open in your default web browser. If it doesn't, open your browser and navigate to `http://localhost:3000`.
 
 This will launch the application in your default web browser at `http://localhost:3000`. You should see the interface for speaking with ChatGPT.
 
@@ -375,7 +347,7 @@ For people who is interested in the coding,  I have created this program by keep
 
 10. The code defines a React component called `mode` that represents the user interface for the application. It displays a heading, a button to start or stop recording, a text area to display the user's transcription, and a text area to display the AI's response. If the application is currently processing the user's voice, it displays a loading message.
 
-    For the Matrix Animation I will explain later.
+For the Matrix Animation I will explain later.
 
 11. Finally, the `App` component returns the `mode` component as the rendered output.
 
@@ -387,11 +359,9 @@ If you want to add the Matrix animation.
 
 1. Create a new CSS file in your project folder. You can create it in the same folder as your React component or in a separate folder for styles. For this example, let's create a file called `MatrixTheme.css` in the `src` folder.
 
- 2. Open the `MatrixTheme.css` file and paste the provided CSS code:
+2. Open the `MatrixTheme.css` file and paste the provided CSS code:
 
 ```
-
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
 .matrix-background {
